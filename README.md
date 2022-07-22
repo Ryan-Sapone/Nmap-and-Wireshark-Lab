@@ -17,6 +17,7 @@ This technique is often referred to as half-open scanning, because you don't ope
 
 <img src="https://user-images.githubusercontent.com/107446796/180570057-8903c43e-1995-4fbd-a3a5-843216bb97b8.png">
 <img src="https://user-images.githubusercontent.com/107446796/180570496-86ba9360-ac44-47df-9e22-7d38854d93b3.png">
+You can see that Nmap picked up on my three open TCP ports, and in Wireshark, you can see the SYN and SYN/ACK for port 80, and the SYN and RST for closed port 113.
 
 <h2>-sT</h2>
 TCP connect scan is the default TCP scan type when SYN scan is not an option. This is the case when a user does not have raw packet privileges. Instead of writing raw packets as most other scan types do, Nmap asks the underlying operating system to establish a connection with the target machine and port by issuing the connect system call. This is the same high-level system call that web browsers, P2P clients, and most other network-enabled applications use to establish a connection. It is part of a programming interface known as the Berkeley Sockets API. Rather than read raw packet responses off the wire, Nmap uses this API to obtain status information on each connection attempt.
@@ -25,6 +26,7 @@ When SYN scan is available, it is usually a better choice. Nmap has less control
 
 <img src="https://user-images.githubusercontent.com/107446796/180570524-560e81f4-15c5-4e48-8b58-a9db7d8d527e.png">
 <img src="https://user-images.githubusercontent.com/107446796/180570533-f4464d30-28a5-4556-ae56-a2d182b1d718.png">
+Same information, however you can see the ACK message being sent for the open port 80, completing the connection.
 
 <h2>-sA</h2>
 This scan is different than the others discussed so far in that it never determines open (or even open|filtered) ports. It is used to map out firewall rulesets, determining whether they are stateful or not and which ports are filtered.
@@ -33,6 +35,7 @@ The ACK scan probe packet has only the ACK flag set (unless you use --scanflags)
 
 <img src="https://user-images.githubusercontent.com/107446796/180570692-b9db068d-f131-4d38-9da7-eaa2f05ec9b7.png">
 <img src="https://user-images.githubusercontent.com/107446796/180570700-c50d5e09-e6ef-4c8b-8ed4-325b69d90715.png">
+You can see that even though port 143 is open from earlier scans, the ACK scan doesn't show up as opened for us. There's also no difference in Wireshark that I found.
 
 <h2>-sW</h2>
 Window scan is exactly the same as ACK scan except that it exploits an implementation detail of certain systems to differentiate open ports from closed ones, rather than always printing unfiltered when a RST is returned. It does this by examining the TCP Window field of the RST packets returned. On some systems, open ports use a positive window size (even for RST packets) while closed ones have a zero window. So instead of always listing a port as unfiltered when it receives a RST back, Window scan lists the port as open or closed if the TCP Window value in that reset is positive or zero, respectively.
@@ -61,6 +64,7 @@ Nmap detects rate limiting and slows down accordingly to avoid flooding the netw
 
 <img src="https://user-images.githubusercontent.com/107446796/180570916-fe82072b-123d-4ee2-949c-d902f21baead.png">
 <img src="https://user-images.githubusercontent.com/107446796/180570921-395a4c36-ab58-4bbd-9d2f-0b22df8b7534.png">
+Even though I had UDP ports 1645 and 593 open, the destinations were still unreachable.
 
 <h2>-sN</h2>
 These three scan types (even more are possible with the --scanflags option described in the next section) exploit a subtle loophole in the TCP RFC to differentiate between open and closed ports. Page 65 of RFC 793 says that “if the [destination] port state is CLOSED .... an incoming segment not containing a RST causes a RST to be sent in response.” Then the next page discusses packets sent to open ports without the SYN, RST, or ACK bits set, stating that: “you are unlikely to get here, but if you do, drop the segment, and return.”
@@ -105,9 +109,11 @@ SCTP COOKIE ECHO scan is a more advanced SCTP scan. It takes advantage of the fa
 
 <img src="https://user-images.githubusercontent.com/107446796/180571842-135a9f06-bf60-4f92-8d02-7dca35076054.png">
 <img src="https://user-images.githubusercontent.com/107446796/180571937-2690ca67-0893-44eb-bddd-344bf72706e4.png">
+Due to only having the port open because of a Netcat listener, Nmap was not able to list any version or script information.
 
 <h2>-sC</h2>
 (see https://nmap.org/book/nse.html)
 
 <img src="https://user-images.githubusercontent.com/107446796/180571872-4af824df-1181-4bb7-a6f6-ebff9bea47d9.png">
 <img src="https://user-images.githubusercontent.com/107446796/180571928-a1d07beb-ec48-4201-8fd1-be9b44958d7f.png">
+Due to only having the port open because of a Netcat listener, Nmap was not able to list any version or script information.
